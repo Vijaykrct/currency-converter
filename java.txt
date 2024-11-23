@@ -1,0 +1,97 @@
+package com.example.currencyconverter;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+import java.util.HashMap;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText inputAmount;
+    private TextView outputAmount;
+    private Spinner fromCurrencySpinner, toCurrencySpinner;
+
+    // Currency conversion rates with USD as the base
+    private final Map<String, Double> currencyRates = new HashMap<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        inputAmount = findViewById(R.id.inputAmount);
+        outputAmount = findViewById(R.id.outputAmount);
+        fromCurrencySpinner = findViewById(R.id.fromCurrencySpinner);
+        toCurrencySpinner = findViewById(R.id.toCurrencySpinner);
+
+        initializeCurrencyRates();
+        setupSpinners();
+    }
+
+    private void initializeCurrencyRates() {
+        // Using USD as the base currency
+        currencyRates.put("USD", 1.0);
+        currencyRates.put("EUR", 0.85);
+        currencyRates.put("GBP", 0.75);
+        currencyRates.put("INR", 74.5);
+        currencyRates.put("JPY", 110.5);
+        currencyRates.put("AUD", 1.35);
+        currencyRates.put("CAD", 1.25);
+        currencyRates.put("CHF", 0.91);
+        currencyRates.put("CNY", 6.45);
+        currencyRates.put("HKD", 7.80);
+        currencyRates.put("SGD", 1.35);
+        currencyRates.put("NZD", 1.42);
+        currencyRates.put("KRW", 1140.00);
+        currencyRates.put("MXN", 20.00);
+        currencyRates.put("ZAR", 14.50);
+        currencyRates.put("BRL", 5.25);
+        currencyRates.put("PHP", 50.00);
+        currencyRates.put("AED", 3.67);
+        currencyRates.put("RUB", 73.00);
+        currencyRates.put("SEK", 8.60);
+        currencyRates.put("NOK", 8.90);
+        currencyRates.put("TRY", 9.00);
+        currencyRates.put("DKK", 6.30);
+        currencyRates.put("PLN", 3.90);
+        currencyRates.put("THB", 33.00);
+    }
+
+    private void setupSpinners() {
+        // Get the list of currency codes from the rates map
+        String[] currencies = currencyRates.keySet().toArray(new String[0]);
+
+        // Set up ArrayAdapter for the spinners
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, currencies);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Assign adapter to both spinners
+        fromCurrencySpinner.setAdapter(adapter);
+        toCurrencySpinner.setAdapter(adapter);
+    }
+
+    public void convertCurrency(View view) {
+        String amountStr = inputAmount.getText().toString();
+        if (amountStr.isEmpty()) {
+            Toast.makeText(this, "Please enter an amount", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double amount = Double.parseDouble(amountStr);
+
+        String fromCurrency = fromCurrencySpinner.getSelectedItem().toString();
+        String toCurrency = toCurrencySpinner.getSelectedItem().toString();
+
+        double fromRate = currencyRates.get(fromCurrency);
+        double toRate = currencyRates.get(toCurrency);
+
+        double convertedAmount = (amount / fromRate) * toRate;
+        outputAmount.setText(String.format("Converted Amount: %.2f %s", convertedAmount, toCurrency));
+    }
+}
